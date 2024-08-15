@@ -1,7 +1,8 @@
 import allure
 import pytest
+import requests
+from utils.urls import Urls
 from utils.helpers import Helpers
-from utils.methods import UserMethods
 from utils.data import ApiResponses
 
 
@@ -16,9 +17,9 @@ class TestEditUser:
             {"email": Helpers.generate_random_email()}
         ]
     )
-    def test_edit_user_data_success(self, new_field, with_token):
-
-       test_user = UserMethods.edit_user_data_with_auth(new_field, with_token)
+    def test_edit_user_data_success(self, new_field, create_and_delete_user):
+       test_user = requests.patch(Urls.MAIN_URL + Urls.EDIT_USER, data=new_field, headers={'Authorization':
+                                                                                               create_and_delete_user[1]})
        assert test_user.status_code == 200 and test_user.json()['success']
 
     @allure.title('Изменение одного из полей у пользователя без авторизации')
@@ -31,6 +32,6 @@ class TestEditUser:
             {"email": Helpers.generate_random_email()},
         ]
     )
-    def test_edit_user_data_no_auth_fail(self, new_field, no_token):
-        test_user = UserMethods.edit_user_data_no_auth(new_field)
+    def test_edit_user_data_no_auth_fail(self, new_field, create_and_delete_user):
+        test_user = requests.patch(Urls.MAIN_URL + Urls.EDIT_USER, data=new_field)
         assert test_user.status_code == 401 and test_user.json()['message'] == ApiResponses.EDIT_FIELD_NO_AUTH

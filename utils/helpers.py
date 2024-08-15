@@ -21,7 +21,6 @@ class Helpers:
         email = fake.email()
         return email
 
-
     @staticmethod
     def generate_random_password():
         fake = Faker()
